@@ -3,5 +3,6 @@ android/gen/*
 android/out/*
 android/.classpath
 android/.project
+res/values/meta.xml
 .idea
 *.iml
