@@ -1,4 +1,7 @@
 android/bin/*
 android/gen/*
+android/out/*
 android/.classpath
 android/.project
+.idea
+*.iml
