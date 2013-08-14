@@ -38,7 +38,8 @@ public class HomeActivity extends Activity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: start activity
+                Intent intent = new Intent(HomeActivity.this, CheckMatchFriendsActivity.class);
+                startActivity(intent);
             }
         });
 
