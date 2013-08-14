@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import com.facebook.*;
 import com.facebook.model.GraphObject;
@@ -23,6 +25,8 @@ public class CheckMatchFriendsActivity extends Activity {
 
     private TextView numberOfContactsView;
     private TextView numberOfFbFriendsView;
+    private ViewGroup progressViewWrapper;
+    private TextView progressTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +34,12 @@ public class CheckMatchFriendsActivity extends Activity {
         setContentView(R.layout.activity_check_match_friends);
         numberOfContactsView = (TextView) findViewById(R.id.number_of_contacts);
         numberOfFbFriendsView = (TextView) findViewById(R.id.number_of_fb_friends);
+        progressViewWrapper = (ViewGroup) findViewById(R.id.progress_bar_container);
+        progressTextView = (TextView) findViewById(R.id.progress_text);
 
         contactQueryHelper = new ContactQueryHelper(this);
         startFetchingFriends();
+        showIndicatorWithText("Fetching friends data from Facebook");
     }
 
     @Override
@@ -51,6 +58,15 @@ public class CheckMatchFriendsActivity extends Activity {
         }
 
         super.onStop();
+    }
+
+    private void showIndicatorWithText(CharSequence text) {
+        progressViewWrapper.setVisibility(View.VISIBLE);
+        progressTextView.setText(text);
+    }
+
+    private void hideIndicator() {
+        progressViewWrapper.setVisibility(View.GONE);
     }
 
     private boolean ensureOpenSession() {
@@ -91,8 +107,18 @@ public class CheckMatchFriendsActivity extends Activity {
             JSONArray data = FetchFbFriendsHelper.parseData(result);
             updateNumberOfFbFriends(data.length());
             String nextUrl = FetchFbFriendsHelper.parseNextUrl(result);
+            boolean isNextRequestSent = false;
             if (nextUrl != null) {
-                // TODO: implement this
+                String[] splits = nextUrl.split("facebook.com/", 2);
+                if (splits.length == 2) {
+                    Request nextRequest = new Request(Session.getActiveSession(), splits[1]);
+                    nextRequest.setCallback(new Callback());
+                    fetchFriendsRequest = nextRequest.executeAsync();
+                    isNextRequestSent = true;
+                }
+            }
+            if (!isNextRequestSent) {
+                hideIndicator();
             }
         }
 
