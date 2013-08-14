@@ -11,6 +11,11 @@ import com.facebook.*;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphObjectList;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Activity to query contact data, fetch facebook's friends and check for matching item.
@@ -22,6 +27,7 @@ public class CheckMatchFriendsActivity extends Activity {
     private boolean pickFriendsWhenSessionOpened;
     private Cursor cursorForContacts;
     private RequestAsyncTask fetchFriendsRequest;
+    private List<FbFriend> friends = new ArrayList<FbFriend>();
 
     private TextView numberOfContactsView;
     private TextView numberOfFbFriendsView;
@@ -106,6 +112,7 @@ public class CheckMatchFriendsActivity extends Activity {
             GraphObject result = response.getGraphObject();
             JSONArray data = FetchFbFriendsHelper.parseData(result);
             updateNumberOfFbFriends(data.length());
+            storeFriendsData(data);
             String nextUrl = FetchFbFriendsHelper.parseNextUrl(result);
             boolean isNextRequestSent = false;
             if (nextUrl != null) {
@@ -140,6 +147,24 @@ public class CheckMatchFriendsActivity extends Activity {
                     numberOfFbFriendsView.setText(Integer.toString(currentNum + numberOfFbFriends));
                 }
             });
+        }
+
+        private void storeFriendsData(JSONArray data) {
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject item = null;
+                try {
+                    item = data.getJSONObject(i);
+                } catch (JSONException e) {
+                    Log.e("FB2Add", "failed to get " + i + "-th element from " + data);
+                    continue;
+                }
+                String url = FetchFbFriendsHelper.parseValidPictureUrlFromUserItem(item);
+                if (url != null) {
+                    String name = FetchFbFriendsHelper.parseNameFromUserItem(item);
+                    friends.add(new FbFriend(name.replaceAll("\\s+", " "), url));
+                    Log.d("FB2ADD", name.replaceAll("\\s+", " "));
+                }
+            }
         }
     }
 }

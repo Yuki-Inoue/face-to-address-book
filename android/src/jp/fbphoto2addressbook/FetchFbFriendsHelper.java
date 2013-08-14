@@ -56,11 +56,42 @@ public class FetchFbFriendsHelper {
         if (!paging.has("next")) {
             return null;
         }
+        return unsefeGetFromJSONObject(paging, "next");
+    }
+
+    public static String parseNameFromUserItem(JSONObject user) {
+        return unsefeGetFromJSONObject(user, "name");
+    }
+
+    /**
+     * @param user JSONObject containing picture field
+     * @return URL of the non-silhouette picture, or null if user's picture is a silhouette.
+     */
+    public static String parseValidPictureUrlFromUserItem(JSONObject user) {
         try {
-            return paging.getString("next");
-        } catch (JSONException o) {
-            Log.w("FB2ADD", "failed to get next paging");
-            return null;
+            JSONObject picture = user.getJSONObject("picture");
+            JSONObject data = picture.getJSONObject("data");
+            if (!data.getBoolean("is_silhouette")) {
+                return data.getString("url");
+            }
+        } catch (JSONException e) {
+            // Cannot do anything
+            Log.e("FB2ADD", "failed to parse picture data from user JSON: " + user);
         }
+        return null;
+    }
+
+    /**
+     * Utility class to avoid try-catch when
+     * 1) we can assume the object has key
+     * 2) we cannot do anything even if we catch the exception
+     */
+    private static String unsefeGetFromJSONObject(JSONObject obj, String key) {
+        try {
+            return obj.getString(key);
+        } catch (JSONException e) {
+            Log.e("FB2ADD", "failed to parse '" + key + "': " + obj);
+        }
+        return null;
     }
 }
