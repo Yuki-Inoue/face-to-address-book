@@ -43,20 +43,38 @@
   <RelativeLayout
       android:layout_width="fill_parent"
       android:layout_height="fill_parent"
-      android:id="@+id/progress_bar_container"
       android:gravity="center" >
-    <ProgressBar
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/progress_bar"
-        android:indeterminate="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
-    <TextView
+        android:id="@+id/progress_bar_container"
+        android:orientation="vertical">
+      <ProgressBar
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/progress_bar"
+          android:indeterminate="true"
+          android:layout_centerHorizontal="true"/>
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center_horizontal"
+          android:id="@+id/progress_text"/>
+    </LinearLayout>
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/progress_text"
-        android:layout_below="@id/progress_bar"
-        android:gravity="center_horizontal"/>
+        android:text="OK"
+        android:id="@+id/match_friends_ok_button"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"/>
+    <ListView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:id="@+id/match_friends_list"
+        android:layout_above="@id/match_friends_ok_button"
+        android:layout_below="@id/progress_text"
+        android:visibility="gone">
+    </ListView>
   </RelativeLayout>
 </LinearLayout>

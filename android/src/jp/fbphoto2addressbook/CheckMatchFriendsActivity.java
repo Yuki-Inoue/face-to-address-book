@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.facebook.*;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphObjectList;
@@ -15,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,11 +32,14 @@ public class CheckMatchFriendsActivity extends Activity {
     private Cursor cursorForContacts;
     private RequestAsyncTask fetchFriendsRequest;
     private List<FbFriend> friends = new ArrayList<FbFriend>();
+    private FriendsAdapter friendsAdapter;
 
     private TextView numberOfContactsView;
     private TextView numberOfFbFriendsView;
     private ViewGroup progressViewWrapper;
     private TextView progressTextView;
+    private ListView matchFriendsListView;
+    private Button confirmButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +49,11 @@ public class CheckMatchFriendsActivity extends Activity {
         numberOfFbFriendsView = (TextView) findViewById(R.id.number_of_fb_friends);
         progressViewWrapper = (ViewGroup) findViewById(R.id.progress_bar_container);
         progressTextView = (TextView) findViewById(R.id.progress_text);
+        matchFriendsListView = (ListView) findViewById(R.id.match_friends_list);
+        confirmButton = (Button) findViewById(R.id.match_friends_ok_button);
 
+        friendsAdapter = new FriendsAdapter(this);
+        matchFriendsListView.setAdapter(friendsAdapter);
         contactQueryHelper = new ContactQueryHelper(this);
         startFetchingFriends();
         showIndicatorWithText("Fetching friends data from Facebook");
@@ -51,6 +62,10 @@ public class CheckMatchFriendsActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        ensureInitCursorForContacts();
+    }
+
+    private void ensureInitCursorForContacts() {
         if (cursorForContacts == null) {
             cursorForContacts = contactQueryHelper.getCursorForSortedContacts();
             numberOfContactsView.setText(Integer.toString(cursorForContacts.getCount()));
@@ -125,7 +140,7 @@ public class CheckMatchFriendsActivity extends Activity {
                 }
             }
             if (!isNextRequestSent) {
-                hideIndicator();
+                lookForMatchingFriends();
             }
         }
 
@@ -161,10 +176,39 @@ public class CheckMatchFriendsActivity extends Activity {
                 String url = FetchFbFriendsHelper.parseValidPictureUrlFromUserItem(item);
                 if (url != null) {
                     String name = FetchFbFriendsHelper.parseNameFromUserItem(item);
-                    friends.add(new FbFriend(name.replaceAll("\\s+", " "), url));
+                    friends.add(new FbFriend(name.replaceAll("\\s+", " ").trim(), url));
                     Log.d("FB2ADD", name.replaceAll("\\s+", " "));
                 }
             }
+        }
+
+        private void lookForMatchingFriends() {
+            showIndicatorWithText("Check for matching friends data");
+            matchFriendsListView.setVisibility(View.VISIBLE);
+            confirmButton.setVisibility(View.VISIBLE);
+            confirmButton.setEnabled(false);
+
+            ensureInitCursorForContacts();
+            // Memo: we do O(nm) comparison, this can be reduced to O(n + m)
+            while (cursorForContacts.moveToNext()) {
+                for (int i = 0; i < friends.size(); i++) {
+                    if (friends.get(i).getName().equals(
+                            cursorForContacts.getString(ContactQueryHelper.DISPLAY_NAME_INDEX))) {
+                        friendsAdapter.add(friends.get(i));
+                    }
+                }
+            }
+
+            hideIndicator();
+            confirmButton.setEnabled(true);
+            confirmButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO:
+                    Toast.makeText(CheckMatchFriendsActivity.this,
+                            "Not Implemented", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 }
