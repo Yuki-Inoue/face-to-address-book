@@ -13,8 +13,6 @@ public class ContactQueryHelper {
     public static final int DISPLAY_NAME_INDEX = 0;
     public static final int THUMBNAIL_URI_INDEX = 1;
 
-    private static final String CONDITION_MIMETYPE_IS_CONTACT_ITEM
-            = ContactsContract.Data.MIMETYPE + "==\'vnd.android.cursor.item/name\'";
     private final Context context;
 
     public ContactQueryHelper(Context context) {
@@ -26,14 +24,14 @@ public class ContactQueryHelper {
      */
     public Cursor getCursorForSortedContacts() {
         Cursor c = context.getContentResolver().query(
-                ContactsContract.Data.CONTENT_URI,
+                ContactsContract.Contacts.CONTENT_URI,
                 new String[] {
                         ContactsContract.Contacts.DISPLAY_NAME,
                         ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
                 },
-                CONDITION_MIMETYPE_IS_CONTACT_ITEM,
                 null,
-                ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME);
+                null,
+                ContactsContract.Contacts.DISPLAY_NAME);
         if (c.moveToFirst()) {
             return c;
         }
