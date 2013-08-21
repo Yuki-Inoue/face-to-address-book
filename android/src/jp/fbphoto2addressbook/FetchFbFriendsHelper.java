@@ -51,6 +51,10 @@ public class FetchFbFriendsHelper {
         return (JSONArray) result.getProperty("data");
     }
 
+    public static String parseIdFromUserItem(JSONObject user) {
+        return unsefeGetFromJSONObject(user, ID_FIELD);
+    }
+
     public static String parseNextUrl(GraphObject result) {
         JSONObject paging = (JSONObject) result.getProperty("paging");
         if (!paging.has("next")) {

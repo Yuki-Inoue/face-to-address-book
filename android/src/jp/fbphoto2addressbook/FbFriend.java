@@ -7,12 +7,18 @@ package jp.fbphoto2addressbook;
  * @author Kazuki Nishiura
  */
 public class FbFriend implements Comparable<FbFriend> {
+    private final String fbId;
     private final String name;
     private final String pictureUrl;
 
-    public FbFriend(String name, String pictureUrl) {
+    public FbFriend(String fbId, String name, String pictureUrl) {
+        this.fbId = fbId;
         this.name = name;
         this.pictureUrl = pictureUrl;
+    }
+
+    public String getFbId() {
+        return fbId;
     }
 
     public String getName() {

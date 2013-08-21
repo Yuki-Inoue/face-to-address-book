@@ -12,13 +12,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.facebook.*;
 import com.facebook.model.GraphObject;
-import com.facebook.model.GraphObjectList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -175,8 +173,9 @@ public class CheckMatchFriendsActivity extends Activity {
                 }
                 String url = FetchFbFriendsHelper.parseValidPictureUrlFromUserItem(item);
                 if (url != null) {
+                    String id = FetchFbFriendsHelper.parseIdFromUserItem(item);
                     String name = FetchFbFriendsHelper.parseNameFromUserItem(item);
-                    friends.add(new FbFriend(name.replaceAll("\\s+", " ").trim(), url));
+                    friends.add(new FbFriend(id, name.replaceAll("\\s+", " ").trim(), url));
                     Log.d("FB2ADD", name.replaceAll("\\s+", " "));
                 }
             }
