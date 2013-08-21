@@ -2,6 +2,7 @@ package jp.fbphoto2addressbook;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.facebook.*;
 import com.facebook.model.GraphObject;
 import org.json.JSONArray;
@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Activity to query contact data, fetch facebook's friends and check for matching item.
@@ -193,7 +194,8 @@ public class CheckMatchFriendsActivity extends Activity {
                 for (int i = 0; i < friends.size(); i++) {
                     if (friends.get(i).getName().equals(
                             cursorForContacts.getString(ContactQueryHelper.DISPLAY_NAME_INDEX))) {
-                        friendsAdapter.add(friends.get(i));
+                        int contactId = cursorForContacts.getInt(ContactQueryHelper.ID_INDEX);
+                        friendsAdapter.add(friends.get(i).setContactId(contactId));
                     }
                 }
             }
@@ -203,9 +205,15 @@ public class CheckMatchFriendsActivity extends Activity {
             confirmButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO:
-                    Toast.makeText(CheckMatchFriendsActivity.this,
-                            "Not Implemented", Toast.LENGTH_SHORT).show();
+                    Set<Friend> selectedFriends = friendsAdapter.getSelectedFriends();
+                    for (Friend friend: selectedFriends){
+                        Bitmap icon = friendsAdapter.getDisplayedImage(friend.getFbId());
+                        contactQueryHelper.updateContactPhoto(
+                                friend.getContactId(),
+                                Util.getBytesFromBitmap(icon));
+                        Log.d("FB2ADD", "Import photo for " + friend.getName() + "("
+                                + friend.getContactId() + ")");
+                    }
                 }
             });
         }

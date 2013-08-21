@@ -2,6 +2,7 @@ package jp.fbphoto2addressbook;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
     private Set<Friend> selectedFriends;
     private RequestQueue queue;
     private ImageLoader imageLoader;
+    private Map<String, View> friendsToViews = new HashMap<String, View>();
 
     public FriendsAdapter(Context context) {
         super(context, R.layout.list_item_friend, new LinkedList<Friend>());
@@ -31,6 +33,7 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
         selectedFriends = new HashSet<Friend>();
         queue = Volley.newRequestQueue(getContext());
         imageLoader = new ImageLoader(queue, new BitmapCache());
+
     }
 
     @Override
@@ -53,6 +56,7 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
             }
         });
 
+        friendsToViews.put(friend.getFbId(), view);
         ImageLoader.ImageListener listener = ImageLoader.getImageListener(
                 ((ImageView) view.findViewById(R.id.friend_picture)),
                 R.drawable.ic_contact_picture,
@@ -60,6 +64,15 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
         imageLoader.get(friend.getPictureUrl(), listener);
 
         return view;
+    }
+
+    public Bitmap getDisplayedImage(String fbId) {
+        ImageView iconView = (ImageView) friendsToViews.get(fbId).findViewById(R.id.friend_picture);
+        return  ((BitmapDrawable) iconView.getDrawable()).getBitmap();
+    }
+
+    public Set<Friend> getSelectedFriends() {
+        return selectedFriends;
     }
 
     // copied from http://dev.classmethod.jp/smartphone/android/android-tips-51-volley/
