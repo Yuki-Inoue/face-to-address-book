@@ -19,16 +19,16 @@ import java.util.*;
 /**
  * @author Kazuki Nishiura
  */
-public class FriendsAdapter extends ArrayAdapter<FbFriend> {
+public class FriendsAdapter extends ArrayAdapter<Friend> {
     private LayoutInflater inflater;
-    private Set<FbFriend> selectedFriends;
+    private Set<Friend> selectedFriends;
     private RequestQueue queue;
     private ImageLoader imageLoader;
 
     public FriendsAdapter(Context context) {
-        super(context, R.layout.list_item_friend, new LinkedList<FbFriend>());
+        super(context, R.layout.list_item_friend, new LinkedList<Friend>());
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        selectedFriends = new HashSet<FbFriend>();
+        selectedFriends = new HashSet<Friend>();
         queue = Volley.newRequestQueue(getContext());
         imageLoader = new ImageLoader(queue, new BitmapCache());
     }
@@ -36,7 +36,7 @@ public class FriendsAdapter extends ArrayAdapter<FbFriend> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = inflater.inflate(R.layout.list_item_friend, null);
-        final FbFriend friend = getItem(position);
+        final Friend friend = getItem(position);
         ((TextView) view.findViewById(R.id.friend_name)).setText(friend.getName());
         final CheckBox checkBox = ((CheckBox) view.findViewById(R.id.check_box));
         checkBox.setChecked(selectedFriends.contains(friend));

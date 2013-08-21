@@ -29,7 +29,7 @@ public class CheckMatchFriendsActivity extends Activity {
     private boolean pickFriendsWhenSessionOpened;
     private Cursor cursorForContacts;
     private RequestAsyncTask fetchFriendsRequest;
-    private List<FbFriend> friends = new ArrayList<FbFriend>();
+    private List<Friend> friends = new ArrayList<Friend>();
     private FriendsAdapter friendsAdapter;
 
     private TextView numberOfContactsView;
@@ -175,7 +175,7 @@ public class CheckMatchFriendsActivity extends Activity {
                 if (url != null) {
                     String id = FetchFbFriendsHelper.parseIdFromUserItem(item);
                     String name = FetchFbFriendsHelper.parseNameFromUserItem(item);
-                    friends.add(new FbFriend(id, name.replaceAll("\\s+", " ").trim(), url));
+                    friends.add(new Friend(id, name.replaceAll("\\s+", " ").trim(), url));
                     Log.d("FB2ADD", name.replaceAll("\\s+", " "));
                 }
             }
