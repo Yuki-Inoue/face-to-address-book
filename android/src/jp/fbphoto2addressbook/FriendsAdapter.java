@@ -33,7 +33,12 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
         selectedFriends = new HashSet<Friend>();
         queue = Volley.newRequestQueue(getContext());
         imageLoader = new ImageLoader(queue, new BitmapCache());
+    }
 
+    @Override
+    public void add(Friend friend) {
+        super.add(friend);
+        selectedFriends.add(friend);
     }
 
     @Override
