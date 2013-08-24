@@ -32,12 +32,30 @@
                 android:id="@+id/setup_login_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
-        <Button
+        <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/start_fetch_data_button"
-                android:text="Start import photos"
-                android:layout_gravity="center_horizontal"
-                android:visibility="gone"/>
+                android:id="@+id/start_fetch_data_button_wrapper"
+                android:orientation="vertical"
+                android:visibility="gone">
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/fetch_data_options"
+                    android:orientation="vertical">
+                <CheckBox
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ignore contact data with photo"
+                        android:id="@+id/if_ignore_contact_data_with_photo"
+                        android:checked="true"/>
+            </LinearLayout>
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/start_fetch_data_button"
+                    android:text="Start import photos"
+                    android:layout_gravity="center_horizontal" />
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

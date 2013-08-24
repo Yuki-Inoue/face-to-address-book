@@ -1,6 +1,7 @@
 package jp.fbphoto2addressbook;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -26,12 +27,17 @@ import java.util.Set;
  * @author Kazuki Nishiura
  */
 public class CheckMatchFriendsActivity extends Activity {
+    public static final String EXTRA_KEY_IF_IGNORE_CONTACT_WITH_PHOTO
+            = "if_ignore_contact_with_photo";
+    private static final boolean SHOULD_IGNORE_CONTACT_WITH_PHOTO_DEFAULT = true;
+
     private ContactQueryHelper contactQueryHelper;
     private boolean pickFriendsWhenSessionOpened;
     private Cursor cursorForContacts;
     private RequestAsyncTask fetchFriendsRequest;
     private List<Friend> friends = new ArrayList<Friend>();
     private FriendsAdapter friendsAdapter;
+    private boolean shouldIgnoreContactWithPhoto;
 
     private TextView numberOfContactsView;
     private TextView numberOfFbFriendsView;
@@ -52,6 +58,11 @@ public class CheckMatchFriendsActivity extends Activity {
         progressTextView = (TextView) findViewById(R.id.progress_text);
         matchFriendsListView = (ListView) findViewById(R.id.match_friends_list);
         confirmButton = (Button) findViewById(R.id.match_friends_ok_button);
+
+        Intent intent = getIntent();
+        shouldIgnoreContactWithPhoto = intent.getBooleanExtra(
+                EXTRA_KEY_IF_IGNORE_CONTACT_WITH_PHOTO,
+                SHOULD_IGNORE_CONTACT_WITH_PHOTO_DEFAULT);
 
         friendsAdapter = new FriendsAdapter(this);
         matchFriendsListView.setAdapter(friendsAdapter);
@@ -194,6 +205,10 @@ public class CheckMatchFriendsActivity extends Activity {
             // Memo: we do O(nm) comparison, this can be reduced to O(n + m)
             while (cursorForContacts.moveToNext()) {
                 for (int i = 0; i < friends.size(); i++) {
+                    if (shouldIgnoreContactWithPhoto
+                            && cursorForContacts.getString(ContactQueryHelper.THUMBNAIL_URI_INDEX) != null) {
+                        continue;
+                    }
                     if (friends.get(i).getName().equals(
                             cursorForContacts.getString(ContactQueryHelper.DISPLAY_NAME_INDEX))) {
                         int contactId = cursorForContacts.getInt(ContactQueryHelper.ID_INDEX);
