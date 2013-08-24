@@ -35,6 +35,7 @@ public class CheckMatchFriendsActivity extends Activity {
 
     private TextView numberOfContactsView;
     private TextView numberOfFbFriendsView;
+    private TextView numberOfMatchedFriendsView;
     private ViewGroup progressViewWrapper;
     private TextView progressTextView;
     private ListView matchFriendsListView;
@@ -46,6 +47,7 @@ public class CheckMatchFriendsActivity extends Activity {
         setContentView(R.layout.activity_check_match_friends);
         numberOfContactsView = (TextView) findViewById(R.id.number_of_contacts);
         numberOfFbFriendsView = (TextView) findViewById(R.id.number_of_fb_friends);
+        numberOfMatchedFriendsView = (TextView) findViewById(R.id.number_of_match_friends);
         progressViewWrapper = (ViewGroup) findViewById(R.id.progress_bar_container);
         progressTextView = (TextView) findViewById(R.id.progress_text);
         matchFriendsListView = (ListView) findViewById(R.id.match_friends_list);
@@ -199,6 +201,7 @@ public class CheckMatchFriendsActivity extends Activity {
                     }
                 }
             }
+            numberOfMatchedFriendsView.setText(Integer.toString(friendsAdapter.getCount()));
 
             hideIndicator();
             confirmButton.setEnabled(true);
