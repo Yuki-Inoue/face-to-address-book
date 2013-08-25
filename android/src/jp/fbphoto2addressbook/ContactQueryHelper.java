@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Helper class to retrieve contact data
  *
@@ -25,15 +28,40 @@ public class ContactQueryHelper {
      * @return cursor that point the first element or null if no element found.
      */
     public Cursor getCursorForSortedContacts() {
+        return getCursorForSortedContacts(Collections.EMPTY_LIST);
+    }
+
+    /**
+     * @return cursor that point the first element or null if no element found.
+     */
+    public Cursor getCursorForSortedContacts(List<Integer> idsToPick) {
+        String[] projection = new String[] {
+                ContactsContract.Contacts._ID,
+                ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
+        };
+        String selection = null;
+        if (idsToPick != null && idsToPick.size() > 0) {
+            StringBuilder selectionBuilder = new StringBuilder();
+            selectionBuilder
+                    .append(ContactsContract.Contacts._ID)
+                    .append(" IN (");
+            for (int i = 0; i < idsToPick.size(); i++) {
+                selectionBuilder.append(idsToPick.get(i));
+                if (i == idsToPick.size() - 1) {
+                    selectionBuilder.append(')');
+                } else {
+                    selectionBuilder.append(',');
+                }
+            }
+            selection = selectionBuilder.toString();
+        }
+
         Cursor c = context.getContentResolver().query(
                 ContactsContract.Contacts.CONTENT_URI,
-                new String[] {
-                        ContactsContract.Contacts._ID,
-                        ContactsContract.Contacts.DISPLAY_NAME,
-                        ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
-                },
-                null,
-                null,
+                projection,
+                selection,
+                /* selection args */ null,
                 ContactsContract.Contacts.DISPLAY_NAME);
         if (c.moveToFirst()) {
             return c;

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.facebook.*;
 import com.facebook.model.GraphObject;
 import org.json.JSONArray;
@@ -129,6 +130,13 @@ public class CheckMatchFriendsActivity extends Activity {
         }
     }
 
+    private void transitToResultActivity(ArrayList<Integer> importedFriendIds) {
+        Intent intent = new Intent(this, ResultActivity.class);
+        intent.putIntegerArrayListExtra(
+                ResultActivity.EXTRA_KEY_IMPORTED_FRIEND_IDS, importedFriendIds);
+        startActivity(intent);
+    }
+
     private class Callback implements Request.Callback {
 
         @Override
@@ -224,14 +232,27 @@ public class CheckMatchFriendsActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     Set<Friend> selectedFriends = friendsAdapter.getSelectedFriends();
+                    if (selectedFriends.size() == 0) {
+                        Toast.makeText(
+                                CheckMatchFriendsActivity.this,
+                                "No friends are selected",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    showIndicatorWithText("Importing selected friends' photo..");
+                    matchFriendsListView.setVisibility(View.GONE);
+                    ArrayList<Integer> importedFriendIds = new ArrayList<Integer>();
                     for (Friend friend: selectedFriends){
                         Bitmap icon = friendsAdapter.getDisplayedImage(friend.getFbId());
                         contactQueryHelper.updateContactPhoto(
                                 friend.getContactId(),
                                 Util.getBytesFromBitmap(icon));
+                        importedFriendIds.add(friend.getContactId());
                         Log.d("FB2ADD", "Import photo for " + friend.getName() + "("
                                 + friend.getContactId() + ")");
                     }
+                    transitToResultActivity(importedFriendIds);
                 }
             });
         }
