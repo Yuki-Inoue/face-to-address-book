@@ -3,7 +3,6 @@ package jp.fbphoto2addressbook;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import android.widget.CheckBox;
 import com.facebook.Session;
@@ -59,12 +58,6 @@ public class HomeActivity extends Activity {
         super.onResume();
         uiHelper.onResume();
         handleLoggedInStatus(Session.getActiveSession());
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_home, menu);
-        return true;
     }
 
     private void setOptions(Intent intent) {
