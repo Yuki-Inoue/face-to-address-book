@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.facebook.*;
 import com.facebook.model.GraphObject;
+import com.google.common.base.Joiner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -252,6 +253,11 @@ public class CheckMatchFriendsActivity extends Activity {
                         Log.d("FB2ADD", "Import photo for " + friend.getName() + "("
                                 + friend.getContactId() + ")");
                     }
+                    PrefsUtil.getDefaultEditor(CheckMatchFriendsActivity.this)
+                            .putString(
+                                PrefsUtil.Keys.IMPORTED_FRIEND_IDS,
+                                Joiner.on(',').join(importedFriendIds))
+                            .commit();
                     transitToResultActivity(importedFriendIds);
                 }
             });

@@ -77,9 +77,10 @@ public class ContactQueryHelper {
     public void updateContactPhoto(int contactId, byte[] photo) {
         ContentValues newValues = new ContentValues();
         newValues.put(ContactsContract.CommonDataKinds.Photo.PHOTO, photo);
-        newValues.put(ContactsContract.Data.MIMETYPE,
-                ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
-
+        if (photo != null) {
+            newValues.put(ContactsContract.Data.MIMETYPE,
+                    ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
+        }
         // TODO: check what happens if there is no element to update, and do proper care.
         context.getContentResolver().update(
                 ContactsContract.Data.CONTENT_URI,
@@ -88,5 +89,11 @@ public class ContactQueryHelper {
                         + ContactsContract.Data.MIMETYPE + "=='"
                         + ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE + "'",
                 /* Selection args */ null);
+    }
+
+    public void setNullToContactPhoto(String[] ids) {
+        for (String id: ids) {
+            updateContactPhoto(Integer.parseInt(id), null);
+        }
     }
 }

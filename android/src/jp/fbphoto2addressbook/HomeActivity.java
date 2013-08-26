@@ -3,8 +3,11 @@ package jp.fbphoto2addressbook;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.Toast;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
@@ -15,7 +18,7 @@ import com.facebook.UiLifecycleHelper;
  * @author Kazuki Nishiura
  */
 public class HomeActivity extends Activity {
-
+    public final static int DEBUG_MENU_REMOVE_IMPORTED_PHOTO_ID = 123456;
     private View loginButton;
     private View startButton;
     private View startButtonWrapper;
@@ -58,6 +61,42 @@ public class HomeActivity extends Activity {
         super.onResume();
         uiHelper.onResume();
         handleLoggedInStatus(Session.getActiveSession());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        boolean displayed = super.onCreateOptionsMenu(menu);
+        if (Constants.IS_DEBUG) {
+            menu.add(
+                    /* group id */ Menu.NONE,
+                    DEBUG_MENU_REMOVE_IMPORTED_PHOTO_ID,
+                    /* order */ Menu.NONE,
+                    "Remove imported data (debug only)");
+            return true;
+        } else {
+            return displayed;
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case DEBUG_MENU_REMOVE_IMPORTED_PHOTO_ID:
+                if (!Constants.IS_DEBUG) {
+                    break;
+                }
+                String[] ids = PrefsUtil.getDefault(this)
+                        .getString(PrefsUtil.Keys.IMPORTED_FRIEND_IDS, "").split(",");
+                if (ids.length > 0 && ids[0].length() > 0) {
+                    new ContactQueryHelper(this).setNullToContactPhoto(ids);
+                    Toast.makeText(this, ids.length + " photos are deleted.", Toast.LENGTH_SHORT).show();
+                    PrefsUtil.getDefaultEditor(this).remove(PrefsUtil.Keys.IMPORTED_FRIEND_IDS);
+                } else {
+                    Toast.makeText(this, "No photos are imported by this app.", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setOptions(Intent intent) {
